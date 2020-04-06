@@ -35,6 +35,8 @@ To run with `nodemon` (restart on changes), do:
 npm run dev
 ```
 
+You can read logs by doing `tail -f /tmp/trelloterm`.
+
 ### Building
 
 To compile to JS, do:

@@ -8,6 +8,10 @@ export interface TrelloBoardDetails {
   id: string,
 }
 
+export interface TrelloBoardWithLists extends TrelloBoard {
+  lists?: TrelloListWithCards[];
+}
+
 export interface TrelloList {
   id: string,
   name: string,

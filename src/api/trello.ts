@@ -1,5 +1,5 @@
 import fetch, { RequestInit } from 'node-fetch';
-import {TrelloList, TrelloBoard, TrelloBoardDetails, TrelloCard} from 'src/models/Trello';
+import { TrelloList, TrelloBoard, TrelloCard } from '../models/Trello';
 
 export class TrelloAPIClient {
   constructor(private readonly key: string, private readonly token: string) {
@@ -10,7 +10,7 @@ export class TrelloAPIClient {
   }
 
   public getBoardDetails = async (boardID: string) => {
-    return await this.doRequest<TrelloBoardDetails>(`/boards/${boardID}`);
+    return await this.doRequest<TrelloBoard>(`/boards/${boardID}`);
   }
 
   public getListsOnBoard = async (boardID: string) => {
@@ -30,7 +30,7 @@ export class TrelloAPIClient {
   private doRequest = async <T>(endpoint: string, queryParams?: QueryParams, options?: RequestInit): Promise<T> => {
     const response = await fetch(`https://api.trello.com/1${endpoint}?${this.buildQueryParams(queryParams)}key=${this.key}&token=${this.token}`, options);
     if (response.status < 200 || response.status >= 300) {
-      throw new Error(`Failed to fetch ${endpoint}: ${response}`);
+      throw new Error(`Failed to fetch ${endpoint}: ${JSON.stringify(await response.text())}`);
     }
     return await response.json();
   }
