@@ -27,6 +27,10 @@ export class TrelloAPIClient {
     return await Promise.all(lists.map(async (list: TrelloList) => ({ ...list, cards: await this.getCardsInList(list.id) })));
   }
 
+  public moveCardToList = async (card: TrelloCard, list: TrelloList) => {
+    return await this.doRequest<null>(`/cards/${card.id}`, { 'idList': [list.id] }, { method: 'PUT' });
+  }
+
   private doRequest = async <T>(endpoint: string, queryParams?: QueryParams, options?: RequestInit): Promise<T> => {
     const response = await fetch(`https://api.trello.com/1${endpoint}?${this.buildQueryParams(queryParams)}key=${this.key}&token=${this.token}`, options);
     if (response.status < 200 || response.status >= 300) {

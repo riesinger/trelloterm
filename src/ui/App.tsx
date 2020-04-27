@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {BoardList} from './components/BoardList';
 import {BoardContext, withBoards} from './BoardContext';
 import {TrelloAPIClient} from '../api/trello';
-import {TrelloBoard, TrelloBoardWithLists} from '../models/Trello';
+import {TrelloBoard, TrelloBoardWithLists, TrelloList, TrelloCard} from '../models/Trello';
 import {log} from '../log';
 import {BoardDetails} from './components/BoardDetails';
 
@@ -40,9 +40,18 @@ export const App: React.FC<Props> = ({trello}) => {
     setActiveBoard({ ...board, lists });
   }
 
+  async function onMoveCard(card: TrelloCard, newList: TrelloList) {
+    log('[App]', 'Moving card', card.name, 'to list', newList.name);
+    await trello.moveCardToList(card, newList);
+    if (activeBoard) {
+      loadListsForBoard(activeBoard);
+    }
+  }
+
   return (
     <BoardContext.Provider value={{boards}}>
-      { !activeBoard ? (<WBoardList onSelect={onBoardSelected} />) : (<BoardDetails board={activeBoard} />)  }
+      { !activeBoard ? (<WBoardList onSelect={onBoardSelected} />) : (<BoardDetails
+      board={activeBoard} onMoveCard={onMoveCard}/>)  }
     </BoardContext.Provider>
   );
 }

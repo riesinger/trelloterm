@@ -12,9 +12,7 @@ export const BoardList = ({ boards, onSelect: onSelectEvent }: Props) => {
   const listRef = useRef<Widgets.ListElement>(null);
 
   useEffect(() => {
-    if (listRef && listRef.current) {
-      listRef.current!.focus();
-    }
+    listRef?.current?.focus();
   }, [])
 
   function onSelect(event: any) {
@@ -32,7 +30,8 @@ export const BoardList = ({ boards, onSelect: onSelectEvent }: Props) => {
       label="[Board List]"
       border={{type: 'line'}}
       style={{ selected: { bg: 'white', fg: 'black' } }}
-      scrollbar={{ch: '█'}}
+      scrollbar={{ch: '█', fg: 'green'}}
+      scrollable
       mouse
       keys
       vi
