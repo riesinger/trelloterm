@@ -16,6 +16,7 @@ interface Props {
 export const App: React.FC<Props> = ({trello}) => {
   const [activeBoard, setActiveBoard] = useState<TrelloBoardWithLists | undefined>(undefined);
   const [boards, setBoards] = useState<TrelloBoard[]>([]);
+  const [operationIsPending, setOperationIsPending] = useState(false);
 
   async function loadBoards() {
     setBoards(await trello.listBoards());
@@ -29,6 +30,7 @@ export const App: React.FC<Props> = ({trello}) => {
     log('[App]', 'Selected board', board?.name);
     if (board) {
       setActiveBoard(board);
+      setOperationIsPending(true);
       loadListsForBoard(board);
     }
   }
@@ -38,9 +40,11 @@ export const App: React.FC<Props> = ({trello}) => {
     const lists = await trello.getListsWithCardsOnBoard(board.id);
     log('[App]', 'Got lists for board');
     setActiveBoard({ ...board, lists });
+    setOperationIsPending(false);
   }
 
   async function onMoveCard(card: TrelloCard, newList: TrelloList) {
+    setOperationIsPending(true);
     log('[App]', 'Moving card', card.name, 'to list', newList.name);
     await trello.moveCardToList(card, newList);
     if (activeBoard) {
@@ -51,7 +55,7 @@ export const App: React.FC<Props> = ({trello}) => {
   return (
     <BoardContext.Provider value={{boards}}>
       { !activeBoard ? (<WBoardList onSelect={onBoardSelected} />) : (<BoardDetails
-      board={activeBoard} onMoveCard={onMoveCard}/>)  }
+      board={activeBoard} onMoveCard={onMoveCard} operationIsPending={operationIsPending}/>)  }
     </BoardContext.Provider>
   );
 }

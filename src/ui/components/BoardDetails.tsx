@@ -5,15 +5,20 @@ import {log} from '../../log';
 
 interface Props {
   board: TrelloBoardWithLists;
+  operationIsPending: boolean;
   onMoveCard: (card: TrelloCard, newList: TrelloList) => void;
 }
 
-export const BoardDetails: React.FC<Props> = ({board, onMoveCard}) => {
+export const BoardDetails: React.FC<Props> = ({board, onMoveCard, operationIsPending}) => {
   const [ activeTrack, setActiveTrack ] = useState(0);
 
   useEffect(() => {
     log('[BoardDetails]', 'Opening for board', board.name);
   }, []);
+
+  useEffect(() => {
+    log('[BoardDetails]', operationIsPending ? 'An operation is pending' : 'No operation is pending');
+  }, [operationIsPending]);
 
   function onSelectLeftList() {
     log('[BoardDetails]', 'Selecting list', activeTrack - 1);
@@ -37,7 +42,10 @@ export const BoardDetails: React.FC<Props> = ({board, onMoveCard}) => {
   // onKeypress does not work here
   return (
     <blessed-box width="100%" height="100%" scrollable>
-      <blessed-text width="100%" content={board.lists ? board.name : `Loading board ${board.name}...`} style={{bg: 'white', fg: 'black'}} />
+      <>
+        <blessed-text width="100%-1" content={board.lists ? board.name : `Loading board ${board.name}...`} style={{bg: 'white', fg: 'black'}} />
+        <blessed-box width="1" content={operationIsPending ? '/' : ' '} style={{bg: 'red', fg: 'black'}}/>
+      </>
       <>
         { board.lists && board.lists.map((list, i) => (
           <Track key={list.name} title={list.name} index={i} numberOfLists={board.lists?.length || 0} cards={list.cards}
